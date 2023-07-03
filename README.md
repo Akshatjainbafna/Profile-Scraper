@@ -53,7 +53,7 @@ And when placed after app.run(), No Script will be executed.
 
 1. Clone the repository.
    
-`git clone `
+`git clone https://github.com/Akshatjainbafna/Dinosys-Web-Scrapping-Assignment.git`
 
 2. Install all the dependencies 
 
