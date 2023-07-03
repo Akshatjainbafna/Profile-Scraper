@@ -31,14 +31,15 @@ http://localhost:5002/scrap-data?username=virat&phone_number=7021292055
 	
 2. Below Flask instance
 
-    `# Initialize App
+    `
     app = Flask(__name__)
+   
     CORS(app)
 	
     < Some script >
 	`
 
-3. In "__main__" section:
+4. In "__main__" section:
 `
 	< Some Script >
 
@@ -51,10 +52,17 @@ And when placed after app.run(), No Script will be executed.
 ### How to Run the Flask App?
 
 1. Clone the repository.
+   
 `git clone `
+
 2. Install all the dependencies 
+
 `pip install -r requirements.txt`
+
 3. Run the Flask Server
+
 `python module1.py`
+
 4. You can request the API now.
+   
 `http://localhost:5002/scrap-data?username=virat&phone_number=7021292055`
