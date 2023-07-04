@@ -72,19 +72,19 @@ app = Flask(__name__)
 CORS(app)
 
 
-# Global Variables which can be used through out the app (Default phone_number and username)
-phone_number = "8268291167"
-username = "virat"
-email_address = "akshatbjain.aj@gmail.com"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
-}
-
 
 # Request http://localhost:5002/scrap-data to scrap the data with phone_number and username as query parameters or you can also change the global variables
 
 @app.route("/scrap-data", methods=["GET"])
 def scrape_data():
+
+    # Global Variables which can be used through out the app (Default phone_number and username)
+    phone_number = "8268291167"
+    username = "virat"
+    email_address = "akshatbjain.aj@gmail.com"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
+    }
 
     phone_number, username = request.args.get("phone_number", phone_number), request.args.get("username", username)
 
@@ -193,8 +193,9 @@ def scrape_data():
 
     truecaller_data = {"Registered": None, "Name": None, "Email id": None}
 
+    # RUN truecallerpy --login on the terminal to authenticate in truecaller caller and get the id and paste it here
     try:
-        id = 'a1i04--gTYawxkRVmSNgpNqtvZ1Aj3HzfYQQz9mSNaodhsGIXPAnKyU-j6s2ksW3'
+        id = 'a1i0P--gTcTrhFL-cyftjtOM_bFbSibQvojcniZznUB19Hre4oiEwBH946s33NB1'
         owner = search_phonenumber(phone_number, 'IN', id)
         print(owner)
         truecaller_data["Registered"] = 'Yes'
