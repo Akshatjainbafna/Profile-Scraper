@@ -7,6 +7,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from facebook_scraper import get_profile
+from truecallerpy import search_phonenumber
 
 # from multiprocessing import Process
 # import threading
@@ -71,24 +72,24 @@ app = Flask(__name__)
 CORS(app)
 
 
-# Request http://localhost:5002/scrap-data to scrap the data with phone_number and username as query parameters or you can also change the global variables
+# Global Variables which can be used through out the app (Default phone_number and username)
+phone_number = "8268291167"
+username = "virat"
+email_address = "akshatbjain.aj@gmail.com"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
+}
 
+
+# Request http://localhost:5002/scrap-data to scrap the data with phone_number and username as query parameters or you can also change the global variables
 
 @app.route("/scrap-data", methods=["GET"])
 def scrape_data():
-    # Global Variables which can be used through out the app (Default phone_number and username)
-    phone_number = "8268291167"
-    username = "virat"
-    email_address = "akshatbjain.aj@gmail.com"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
-    }
 
-    phone_number, username = request.args.get(
-        "phone_number", phone_number
-    ), request.args.get("username", username)
+    phone_number, username = request.args.get("phone_number", phone_number), request.args.get("username", username)
 
-    # WHATSAPP
+
+    # ---- WHATSAPP ----
 
     whatsapp_data = {
         "Registered": None,
@@ -97,7 +98,7 @@ def scrape_data():
         "Last Seen": None,
         "Profile Picture": None,
     }
-
+ 
     driver.get(f"https://api.whatsapp.com/send?phone=91{phone_number}")
 
     # Wait for 5 seconds to confirm and click check box in the confirm box to let the webdriver open whatsapp as using selenium we can't click the check box inside the popup boxes
@@ -186,81 +187,56 @@ def scrape_data():
     except NoSuchElementException:
         whatsapp_data["Registered"] = "No"
         print("User not found!")
+  
 
-    # TRUECALLER
+    # ---- TRUECALLER ----
 
     truecaller_data = {"Registered": None, "Name": None, "Email id": None}
 
-    cookiesTrueCaller = [
-        {
-            "name": "tc:cookies",
-            "value": "%7B%22necessary%22%3Atrue%2C%22marketing%22%3Atrue%7D",
-            "domain": "www.truecaller.com",
-            "path": "/",
-            "expires": 1720017936,
-            "httpOnly": False,
-            "secure": False,
-        },
-        {
-            "name": "tc:dismissexitintentpopup",
-            "value": "true",
-            "domain": "www.truecaller.com",
-            "path": "/",
-            "expires": 1688591788,
-            "httpOnly": False,
-            "secure": False,
-        },
-        {
-            "name": "__gads",
-            "value": "ID=31e9d8e3d0af6bb1:T=1687987499:RT=1688137401:S=ALNI_MYeaQv5o0Exvu4V7ia4OeQaWWlRIw",
-            "domain": ".truecaller.com",
-            "path": "/",
-            "expires": 1721683499,
-            "httpOnly": False,
-            "secure": False,
-        },
-        {
-            "name": "__gpi",
-            "value": "UID=00000c1c61d87e62:T=1687987499:RT=1688137401:S=ALNI_MYDfRzpi6AkU3qQypK6iK3X2wqCBA",
-            "domain": ".truecaller.com",
-            "path": "/",
-            "expires": 1721683499,
-            "httpOnly": False,
-            "secure": False,
-        },
-    ]
-
     try:
-        session = requests.Session()
-
-        for cookie in cookiesTrueCaller:
-            session.cookies.set(cookie['name'], cookie['value'])
-        
-        url = f"https://www.truecaller.com/search/in/{phone_number}"
-        response = session.get(url)
-        soup = BeautifulSoup(response.content, "html.parser")
-
-        registered_element = soup.find(
-            "div", {"class": "font-montserrat text-lg sm:text-2xl flex-none"}
-        )
-        truecaller_data["registered"] = (
-            registered_element.text if registered_element else None
-        )
-
-        name_element = soup.find(
-            "div", {"class": "font-montserrat text-lg sm:text-2xl flex-none"}
-        )
-        truecaller_data["name"] = name_element.text if name_element else None
-
-        email_element = soup.findAll("div", {"class": "field__content"})
-        truecaller_data["email"] = (
-            email_element[-1].text if email_element and len(email_element) > 2 else None
-        )
-
+        id = 'a1i04--gTYawxkRVmSNgpNqtvZ1Aj3HzfYQQz9mSNaodhsGIXPAnKyU-j6s2ksW3'
+        owner = search_phonenumber(phone_number, 'IN', id)
+        print(owner)
+        truecaller_data["Registered"] = 'Yes'
+        truecaller_data["Name"] = owner['data'][0]['name']
+        truecaller_data["Address"] = owner['data'][0]['addresses']
+        truecaller_data["Email id"] = owner['data'][0].get('internetAddresses', None)[0]['id']
     except:
         print("error in truecaller")
 
-    # FACEBOOK
+    '''
+    with open('truecallerCookies.json') as cookies:
+        dataCookieTrueCaller=json.load(cookies)
+
+    allCookies = {}
+    session = requests.Session()
+
+    for cookie in dataCookieTrueCaller:
+        session.cookies.set(**cookie)
+
+    print(session.cookies)
+
+    url = f"https://www.truecaller.com/search/in/{phone_number}"
+    response = session.get(url)
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    registered_element = soup.find(
+        "div", {"class": "font-montserrat text-lg sm:text-2xl flex-none"}
+    )
+    #truecaller_data["Registered"] = registered_element.text if registered_element else None
+    
+    name_element = soup.find(
+        "div", {"class": "font-montserrat text-lg sm:text-2xl flex-none"}
+    )
+    #truecaller_data["Name"] = name_element.text if name_element else None
+
+    email_element = soup.findAll("div", {"class": "field__content"})
+    #truecaller_data["Email id"] = email_element[-1].text if email_element and len(email_element) > 2 else None
+    '''
+    
+    
+    # ---- FACEBOOK ----
 
     facebook_data = {
         "Registered": None,
@@ -272,8 +248,8 @@ def scrape_data():
 
     try:
         scrap_fb = get_profile(
-            username, cookies="cookies.txt"
-        )  # Or get_profile("zuck", cookies="cookies.txt")
+            username, cookies="facebookCookies.txt"
+        )
 
         url = f"https://www.facebook.com/{username}"
         response = requests.get(url, headers=headers)
@@ -285,9 +261,7 @@ def scrape_data():
             facebook_data["Name"] = scrap_fb["Name"]
 
             # facebook_scraper package doesnot provides use the username so we are retriving it from the requests.get object
-            facebook_data["Username"] = response.url.split("https://www.facebook.com/")[
-                1
-            ]
+            facebook_data["Username"] = response.url.split("https://www.facebook.com/")[1]
 
             facebook_data["Profile URL"] = scrap_fb["profile_picture"]
 
@@ -297,7 +271,8 @@ def scrape_data():
         facebook_data["Registered"] = "No"
         print("Username not found!")
 
-    # GPAY
+
+    # ---- GPAY ----
 
     url = f"https://gpay.app.goo.gl/{phone_number}"
     response = requests.get(url)
