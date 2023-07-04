@@ -143,7 +143,7 @@ def scrape_data():
             )
             whatsapp_data["Last Seen"] = last_seen.text
         except NoSuchElementException:
-            print("Last scene is disabled!")
+            print("WhatsApp last scene is disabled!")
 
         # Click on profile name/number of the user to view profile
         driver.find_element(By.CSS_SELECTOR, '[title="Profile Details"]').click()
@@ -156,13 +156,12 @@ def scrape_data():
         check_whats_scraped_name_or_number = "".join(name_node.split())
 
         if phone_number == check_whats_scraped_name_or_number[3:]:
-            print("Let me check if name is present")
             try:
                 whatsapp_data["Name"] = driver.find_element(
                     By.CSS_SELECTOR, '[class="enbbiyaj e1gr2w1z hp667wtd"]'
                 ).text
             except NoSuchElementException:
-                print("No name found")
+                print("No name found on whatsapp")
         else:
             whatsapp_data["Name"] = name_node
 
@@ -173,7 +172,7 @@ def scrape_data():
             )
             whatsapp_data["Profile Picture"] = profile_pic.get_attribute("src")
         except NoSuchElementException:
-            print("No Display picture")
+            print("No Display picture found on WhatsApp")
 
         try:
             status = driver.find_element(
@@ -182,11 +181,11 @@ def scrape_data():
             )
             whatsapp_data["Status"] = status.get_attribute("title")
         except NoSuchElementException:
-            print("No status found!")
+            print("No status found on WhatsApp!")
 
     except NoSuchElementException:
         whatsapp_data["Registered"] = "No"
-        print("User not found!")
+        print("User not found on WhatsApp!")
   
 
     # ---- TRUECALLER ----
@@ -197,13 +196,12 @@ def scrape_data():
     try:
         id = 'a1i0P--gTcTrhFL-cyftjtOM_bFbSibQvojcniZznUB19Hre4oiEwBH946s33NB1'
         owner = search_phonenumber(phone_number, 'IN', id)
-        print(owner)
         truecaller_data["Registered"] = 'Yes'
         truecaller_data["Name"] = owner['data'][0]['name']
         truecaller_data["Address"] = owner['data'][0]['addresses']
         truecaller_data["Email id"] = owner['data'][0].get('internetAddresses', None)[0]['id']
     except:
-        print("error in truecaller")
+        print("Error in truecaller")
 
     '''
     with open('truecallerCookies.json') as cookies:
@@ -270,7 +268,7 @@ def scrape_data():
 
     except:
         facebook_data["Registered"] = "No"
-        print("Username not found!")
+        print("Username not found on FaceBook!")
 
 
     # ---- GPAY ----
@@ -287,6 +285,7 @@ def scrape_data():
     upi_ids = [element.text for element in upi_id_elements]
 
     gpay_data = {"Registered": registered, "Name": name, "UPI IDs": upi_ids}
+
 
     results = []
 
