@@ -166,10 +166,9 @@ def scrape_data():
             whatsapp_data["Name"] = name_node
 
         try:
-            profile_pic = driver.find_element(
-                By.CSS_SELECTOR,
-                '[class="g0rxnol2 f804f6gw ln8gz9je ppled2lx gfz4du6o r7fjleex g9p5wyxn i0tg5vk9 aoogvgrq o2zu3hjb bs7a17vp csshhazd _11JPr"]',
-            )
+            profile_pic_container = driver.find_element(By.CSS_SELECTOR, '[style="height: 200px; width: 200px; cursor: pointer;"]')
+            profile_pic = profile_pic_container.find_element(By.TAG_NAME, "img")
+
             whatsapp_data["Profile Picture"] = profile_pic.get_attribute("src")
         except NoSuchElementException:
             print("No Display picture found on WhatsApp")
@@ -201,7 +200,7 @@ def scrape_data():
         truecaller_data["Address"] = owner['data'][0]['addresses']
         truecaller_data["Email id"] = owner['data'][0].get('internetAddresses', None)[0]['id']
     except:
-        print("Error in truecaller")
+        print("User/Email not found in truecaller!")
 
     '''
     with open('truecallerCookies.json') as cookies:
