@@ -53,7 +53,7 @@ def initialize_driver():
 
 # Setting up driver
 chrome_options = Options()
-chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--start-maximized")
 chrome_options.add_argument("--no-sandbox")
 # chrome_options.add_argument("--headless")  # Run in headless mode, i.e, to run in background without opening the browser as we need to authenticate (can be done either scanning QR or using number) & click the checkbox in confirm box(Can't click using selenium, have to be done manually) in the whatsapp
 
