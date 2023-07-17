@@ -2,7 +2,7 @@ from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 import requests
 import pandas as pd
-import time, csv
+import time
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -63,8 +63,14 @@ driver = webdriver.Chrome(options=chrome_options)
 # login to WhatsApp web
 driver.get("https://web.whatsapp.com")
 
-# scan QR code from phone
+
+# implicit wait, on all searches
+driver.implicitly_wait(10)
+
+# explicit wait, only on certain searches
 wait = WebDriverWait(driver, 10)
+# To be used to make wait for specific conditions, such as visibility of an element, element to be clickable, element to contain specific text, etc.
+# wait.until(EC.visibility_of_element_located((By.ID, "my-element")))
 
 
 # Initialize App
