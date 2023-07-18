@@ -53,6 +53,7 @@ def initialize_driver():
 
 # Setting up driver
 chrome_options = Options()
+chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--start-maximized")
 chrome_options.add_argument("--no-sandbox")
 # chrome_options.add_argument("--headless")  # Run in headless mode, i.e, to run in background without opening the browser as we need to authenticate (can be done either scanning QR or using number) & click the checkbox in confirm box(Can't click using selenium, have to be done manually) in the whatsapp
@@ -65,7 +66,7 @@ driver.get("https://web.whatsapp.com")
 
 
 # implicit wait, on all searches
-driver.implicitly_wait(10)
+driver.implicitly_wait(25)
 
 # explicit wait, only on certain searches
 wait = WebDriverWait(driver, 10)
@@ -128,13 +129,8 @@ def scrape_data():
     window_1 = driver.find_element(By.LINK_TEXT, "Continue to Chat")
     window_1.click()
 
-    time.sleep(2)
-
     window_2 = driver.find_element(By.LINK_TEXT, "use WhatsApp Web")
     window_2.click()
-
-    # wait to redirect and load the whatsapp web app, if your internet is fast you can decrease the time of loading the screen
-    time.sleep(25)
 
     try:
         chat_screen = driver.find_element(
@@ -153,8 +149,6 @@ def scrape_data():
 
         # Click on profile name/number of the user to view profile
         driver.find_element(By.CSS_SELECTOR, '[title="Profile Details"]').click()
-
-        time.sleep(5)
 
         name_node = driver.find_element(
             By.CSS_SELECTOR, '[data-testid="contact-info-subtitle"]'
